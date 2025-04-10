@@ -18,9 +18,9 @@ Instant GitHub Repo Deployer, is a simple and efficient tool that allows you to 
 Follow the steps below to set up and run the project:
 
 ```bash
-git clone <your-repo-link>
-cd <repo-folder-name>
-cd backend
+git clone https://github.com/ayushpareek2003/repo-launcher.git
+cd repo-launcher
+cd backend_src
 node server.js
 cd ..
 npm run build
