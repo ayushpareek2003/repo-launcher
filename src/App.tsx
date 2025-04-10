@@ -14,10 +14,10 @@ function App() {
     setError('');
     console.log("inside")
     try {
-      console.log('Sending request to backend with URL:', repoUrl); // Debugging line
+      console.log('Sending request to backend with URL:', repoUrl);
 
-      // Send the URL to the backend to clone, install, and run the repo
-      const response = await fetch('http://localhost:5000/clone-repo', {
+
+      const response = await fetch('http://localhost:5000/clone-repo', {  //we will change this once project is live
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,10 +29,10 @@ function App() {
         throw new Error('Failed to clone and run the repository');
       }
 
-      // Assuming the backend sends back the repo info and contents data
+  
       const data = await response.json();
 
-      // Set the repo data for display
+      
       setRepoInfo(data.repoInfo);
       setRepoData(data.repoContents);
     } catch (err) {
