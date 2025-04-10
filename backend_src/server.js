@@ -7,18 +7,42 @@ const app = express();  // Initialize the Express app
 const git = simpleGit();  // Initialize simple-git for Git operations
 const cors = require('cors');
 const cloneDirectory = path.join(__dirname, 'cloned_repos');  // Define the path where repositories will be cloned
-
+import express from "express";
+import { S3 } from "aws-sdk";
 // If the 'cloned_repos' directory doesn't exist, create it
 if (!fs.existsSync(cloneDirectory)) {
   fs.mkdirSync(cloneDirectory);
 }
+const s3 = new S3({
+  accessKeyId: "7ea9c3f8c7f0f26f0d21c5ce99d1ad6a",
+  secretAccessKey: "b4df203781dd711223ce931a2d7ca269cdbf81bb530de4548474584951b798be",
+  endpoint: "https://e21220f4758c0870ba9c388712d42ef2.r2.cloudflarestorage.com"
+})
 
 
 
-app.use(cors({
-  origin: 'http://localhost:5173',  // Replace with your frontend URL if it's different
-  methods: ['GET', 'POST'],
-}));
+
+const app = express();
+
+app.get("/*", async (req, res) => {
+    // id.100xdevs.com
+    const host = req.hostname;
+
+    const id = host.split(".")[0];
+    const filePath = req.path;
+
+    const contents = await s3.getObject({
+        Bucket: "vercel",
+        Key: `dist/${id}${filePath}`
+    }).promise();
+    
+    const type = filePath.endsWith("html") ? "text/html" : filePath.endsWith("css") ? "text/css" : "application/javascript"
+    res.set("Content-Type", type);
+
+    res.send(contents.Body);
+})
+
+app.listen(3001);
 
 
 // Use body-parser middleware to parse JSON request body
@@ -38,9 +62,24 @@ app.post('/clone-repo', async (req, res) => {
     console.log(`Cloning repository ${repoUrl}...`);
     await git.clone(repoUrl, localRepoPath);  // Clone the repository using simple-git
 
-    // Change the directory to the cloned repo
-    process.chdir(localRepoPath);
+    
+    
+    const host = req.hostname;
 
+    const id = host.split(".")[0];
+    const filePath = req.path;
+
+    const contents = await s3.getObject({
+        Bucket: "cloud_project",
+        Key: `dist/${id}${filePath}`
+    }).promise();
+    
+
+    const type = filePath.endsWith("html") ? "text/html" : filePath.endsWith("css") ? "text/css" : "application/javascript"
+    res.set("Content-Type", type);
+    res.send(contents.Body);
+
+    
     console.log('Installing dependencies...');
     exec('npm install', (err, stdout, stderr) => {
       if (err) {
