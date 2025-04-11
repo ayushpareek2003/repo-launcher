@@ -23,6 +23,6 @@ cd repo-launcher
 cd backend_src
 node server.js
 cd ..
-npm run build
+npm run dev
 ```
 
